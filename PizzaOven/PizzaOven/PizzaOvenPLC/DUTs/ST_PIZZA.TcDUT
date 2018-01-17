@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+  <DUT Name="ST_PIZZA" Id="{07cc2cf4-a60c-4f8e-bc95-c2428e404258}">
+    <Declaration><![CDATA[TYPE ST_PIZZA :
+STRUCT
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,450 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+  <POU Name="FB_PIZZA_OVEN" Id="{e54d8141-8c6a-4975-af63-b1ccd7a5bba4}" SpecialFunc="None">
+    <Declaration><![CDATA[	FUNCTION_BLOCK FB_PIZZA_OVEN 
+VAR_INPUT
+	Pizza_in 	: 			BOOL:=FALSE;
+	Pizza_out 	:			BOOL:=FALSE;
+
+	fbTrig		: 			R_TRIG;
+	fbTrig2		: 			R_TRIG;
+END_VAR
+
+VAR_OUTPUT
+	PizzaStatus	: 			STRING;
+END_VAR
+VAR
+	_pizza_aus: 			BOOL;
+	_pizza_ein:				BOOL;
+	_brand_alarm: 			BOOL;
+	_cook_time:				TIME;
+		_count	:			DINT;
+	
+	fbTimer		: 			TON;
+	fbTimer1	:			TON;
+	
+	_pizza_backen:			BOOL;
+	
+	_teig_auflade:			BOOL;
+
+	_zutaten		:		BOOL;
+
+	_pizza_fertig:			BOOL;
+	_led_anzeige:			BOOL;
+
+	iState		:  			DINT:=0;
+	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="BrandAlarm" Id="{f46e6aa1-263d-4a69-9523-9496ad1a28b8}">
+      <Declaration><![CDATA[PROPERTY BrandAlarm : BOOL]]></Declaration>
+      <Get Name="Get" Id="{38e0107e-4d2f-4a51-b202-875d8ce5ebc6}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[BrandAlarm:=_brand_alarm;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{b5a5cd8e-ac06-4fea-8eda-d1f228cb77c6}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_brand_alarm:=BrandAlarm;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="IngridientDeck" Id="{ea4e0c9b-9f8e-4059-91ce-d2642ed67783}">
+      <Declaration><![CDATA[PROPERTY IngridientDeck : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8f289bdc-e694-425d-bf5e-5bf9c7822329}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IngridientDeck:=_zutaten;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{5d493b73-7a1f-4f56-9e55-1d0c622f8c60}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_zutaten:=IngridientDeck;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="KochZeit" Id="{160a7534-386d-427b-b5aa-18f1f8198e2f}">
+      <Declaration><![CDATA[PROPERTY KochZeit : TIME]]></Declaration>
+      <Get Name="Get" Id="{62fa3185-dfe5-4cd9-b957-7eb0d8e55629}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[KochZeit:=_cook_time;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{6d1c1e6c-34a8-4e5e-9306-029957c80666}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_cook_time:=KochZeit;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="LedAnzeige" Id="{4b30958b-1325-47fa-82c2-2c6b5a056ebd}">
+      <Declaration><![CDATA[PROPERTY LedAnzeige : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8ca948e6-6c58-449b-9704-53c0d7cd339a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[LedAnzeige:= _led_anzeige;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{e16658f1-00c7-4723-8f39-aba3b2ac8a02}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_led_anzeige:= LedAnzeige;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="MethodBrandAlarm" Id="{2acef4a8-b76f-4990-95c7-9507d2e4951d}">
+      <Declaration><![CDATA[METHOD MethodBrandAlarm : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MethodCounter" Id="{4b44d077-033b-4f7e-a518-c3de8b5fa58c}">
+      <Declaration><![CDATA[METHOD MethodCounter : DINT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_count:=_count+1;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MethodLedAnzeige" Id="{ef754064-e191-49c6-a794-270d7cff6354}">
+      <Declaration><![CDATA[METHOD MethodLedAnzeige : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+_led_anzeige:=TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MethodPizza" Id="{973a8685-4554-4338-ac21-4d340b906904}">
+      <Declaration><![CDATA[METHOD PUBLIC MethodPizza : UDINT
+VAR
+
+
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//control buttons
+THIS^.MethodPizzaAufladen();
+THIS^.MethodRemovePizza();
+//status changes
+CASE iState OF 
+0:	PizzaStatus:='Offen Frei';
+IF _teig_auflade AND NOT _zutaten THEN		
+		_teig_auflade:=FALSE;
+		_zutaten:=TRUE;
+END_IF
+fbTimer1(IN:=_zutaten,PT:=T#3S);
+IF fbTimer1.Q THEN
+	iState:=7;
+END_IF 	
+7: IF _zutaten AND NOT _pizza_backen THEN
+					
+		_zutaten:=FALSE;
+		_pizza_backen:=TRUE;
+		iState:=10;
+END_IF
+10:	IF _pizza_backen THEN
+	  PizzaStatus:='Öffen besetzt...';
+	THIS^.MethodLedAnzeige();
+END_IF
+	fbTimer(IN:=_pizza_backen,PT:=KochZeit);
+IF fbTimer.Q THEN
+	//PizzaInOven:=FALSE;
+	THIS^.MethodCounter();
+	iState:=20;
+	
+END_IF
+	
+20:	PizzaStatus:='Entladen';
+IF  NOT _pizza_fertig THEN
+	_brand_alarm:=FALSE;
+	_pizza_backen:=FALSE;
+	_pizza_fertig:=TRUE;
+	fbTimer(IN:=FALSE);
+	iState:=0;
+	ELSE
+		_brand_alarm:=TRUE;
+	END_IF
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MethodPizzaAufladen" Id="{41b55cfc-d288-41c3-9fdc-443befab6b0f}">
+      <Declaration><![CDATA[METHOD MethodPizzaAufladen : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[		fbTrig(CLK:=_pizza_ein);//load pizza button clicked trggered
+IF		fbTrig.Q THEN		//When Triggerd 
+		_teig_auflade:=TRUE;	
+			iState:=0;
+		//Pizza_in:=FALSE;
+		//fbTrig(clk:=FALSE);
+END_IF	]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MethodRemovePizza" Id="{2b4dedaf-8eb2-406a-a5bc-d1bccf5caf5e}">
+      <Declaration><![CDATA[METHOD MethodRemovePizza : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[	fbTrig2(CLK:=_pizza_aus); 
+IF 	fbTrig2.Q THEN
+	_pizza_fertig:=FALSE;
+	//Pizza_out:=FALSE;
+	//fbTrig2(clk:=Pizza_out);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="PizzaAus" Id="{93c4c040-ee33-4a6c-8279-1d3c3ab97d9f}">
+      <Declaration><![CDATA[PROPERTY PizzaAus : BOOL]]></Declaration>
+      <Get Name="Get" Id="{7d6407b2-7a50-4242-9255-b2ce80bba508}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PizzaAus:=_pizza_aus;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{af536bfb-2415-465b-8198-0980b8d9d50d}">
+        <Declaration><![CDATA[VAR
+	
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_pizza_aus:=PizzaAus;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="PizzaDone" Id="{4f2739fa-260b-4ae1-acee-b971e5e03f1e}">
+      <Declaration><![CDATA[PROPERTY PizzaDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{db4cf35a-1689-48af-8094-928878353f4a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PizzaDone:=_pizza_fertig;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{ead687ea-5438-4bea-919f-24f6e4d82ddb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_pizza_fertig:=PizzaDone;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="PizzaEin" Id="{18d4b099-bcef-4881-acb4-0297dd08bd27}">
+      <Declaration><![CDATA[PROPERTY PizzaEin : BOOL]]></Declaration>
+      <Get Name="Get" Id="{1a334dcc-9af8-4421-af00-f0501ca42bcc}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PizzaEin:=_pizza_ein;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{9c7b20e6-744a-4c96-958d-42aa4a630643}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_pizza_ein:=PizzaEin;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="PizzaInOven" Id="{ee446f2d-cb89-4304-b383-b906b2f5a834}">
+      <Declaration><![CDATA[PROPERTY PizzaInOven : BOOL]]></Declaration>
+      <Get Name="Get" Id="{bab41a42-581d-4d13-b068-3c5f3f2690a8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PizzaInOven:=_pizza_backen;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{d8e8d256-ef42-44bb-9d55-c21a05537254}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_pizza_backen:=PizzaInOven;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="PizzaOnDeck" Id="{0c654e1e-b969-4063-a2d1-a8b1e9d8f7f0}">
+      <Declaration><![CDATA[PROPERTY PizzaOnDeck : BOOL]]></Declaration>
+      <Get Name="Get" Id="{779b6387-867b-48b4-997c-ed4ed0c5396e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PizzaOnDeck:=_teig_auflade;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{5d90542b-3ef3-455e-b15d-b7cbc991d2eb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_teig_auflade:=PizzaOnDeck;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Zaehler" Id="{0ff2f4b4-f3a8-4617-82b0-b7a068d35a6b}">
+      <Declaration><![CDATA[PROPERTY Zaehler : DINT]]></Declaration>
+      <Get Name="Get" Id="{8d882e6f-35f8-4904-ab88-1ab5b2fe6ca5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Zaehler:=_count;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{e6f10d83-6106-43ee-88d9-73c3d242278d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_count:=Zaehler;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="FB_PIZZA_OVEN">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.BrandAlarm.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.BrandAlarm.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.IngridientDeck.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.IngridientDeck.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.KochZeit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.KochZeit.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.LedAnzeige.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.LedAnzeige.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.MethodBrandAlarm">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.MethodCounter">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.MethodLedAnzeige">
+      <LineId Id="6" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.MethodPizza">
+      <LineId Id="34" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="50" Count="2" />
+      <LineId Id="86" Count="1" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="131" Count="1" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="110" Count="3" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="60" Count="1" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="62" Count="7" />
+      <LineId Id="71" Count="5" />
+      <LineId Id="140" Count="1" />
+      <LineId Id="77" Count="1" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.MethodPizzaAufladen">
+      <LineId Id="6" Count="5" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.MethodRemovePizza">
+      <LineId Id="11" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaAus.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaAus.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaDone.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaDone.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaEin.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaEin.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaInOven.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaInOven.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaOnDeck.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.PizzaOnDeck.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.Zaehler.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_PIZZA_OVEN.Zaehler.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

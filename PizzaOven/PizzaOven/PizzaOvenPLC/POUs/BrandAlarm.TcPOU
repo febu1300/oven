@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+  <POU Name="BrandAlarm" Id="{61dd71ff-67b5-4776-8f33-e70f3af8451a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK BrandAlarm EXTENDS FB_PIZZA_OVEN
+VAR_INPUT
+	
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="BrandAlarm" Id="{5a7dd443-b2d8-47fa-a80f-4fef296b9646}">
+      <Declaration><![CDATA[PROPERTY BrandAlarm : BOOL]]></Declaration>
+      <Get Name="Get" Id="{68e4276e-2336-4c51-8cd5-1a5d33ac47a3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[BrandAlarm:=_brand_alarm;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{3723f45c-dc27-4224-87c2-e9c0ec0e40cf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[_brand_alarm:=BrandAlarm;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="MethodSetAlarm" Id="{9965b012-9aa4-4715-a8d3-026a696b8cca}">
+      <Declaration><![CDATA[METHOD MethodSetAlarm : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _pizza_fertig AND _pizza_backen THEN
+_brand_alarm:=TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="BrandAlarm">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="BrandAlarm.BrandAlarm.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="BrandAlarm.BrandAlarm.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="BrandAlarm.MethodSetAlarm">
+      <LineId Id="7" Count="1" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

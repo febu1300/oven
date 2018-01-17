@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+  <POU Name="PIZZA_OVEN" Id="{e54d8141-8c6a-4975-af63-b1ccd7a5bba4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC PIZZA_OVEN
+VAR_INPUT
+
+	Pizza_in 	: 		BOOL:=FALSE;
+	Pizza_out 	:		BOOL:=FALSE;
+
+	fbTrig		: 	R_TRIG;
+	fbTrig2		: 	R_TRIG;
+END_VAR
+VAR_OUTPUT
+	PizzaStatus	: 	STRING;
+END_VAR
+VAR
+	fbTimer		: 	TON;
+	PizzaInOven	: 	BOOL;
+	PizzaOnDeck	: 	BOOL;
+	PizzaDone	: 	BOOL;
+ 	
+	iState		:  	DINT:=0;
+	bBurned:		BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+//control buttons
+		fbTrig(CLK:=Pizza_in);//load pizza button clicked trggered
+IF		fbTrig.Q THEN		//When Triggerd 
+		PizzaOnDeck:=TRUE;	
+		//Pizza_in:=FALSE;
+		//fbTrig(clk:=FALSE);
+END_IF		
+
+	fbTrig2(CLK:=Pizza_out); 
+IF 	Pizza_out THEN
+	PizzaDone:=FALSE;
+	//Pizza_out:=FALSE;
+		//fbTrig2(clk:=Pizza_out);
+END_IF
+
+
+//status changes
+CASE iState OF 
+0:	IF PizzaOnDeck AND NOT PizzaInOven THEN
+		PizzaOnDeck:=FALSE;
+		PizzaInOven:=TRUE;
+		iState:=10;
+	END_IF
+10:	PizzaStatus:='cooking...';
+IF PizzaInOven THEN
+fbTimer(IN:=PizzaInOven,PT:=T#3S);
+	END_IF
+IF fbTimer.Q THEN
+	//PizzaInOven:=FALSE;
+	
+	iState:=20;
+	
+END_IF
+	
+20:	//Pizza out.
+	
+	IF  NOT PizzaDone THEN
+
+	PizzaInOven:=FALSE;
+	PizzaDone:=TRUE;
+	fbTimer(IN:=FALSE);
+	iState:=0;
+	ELSE 
+		bBurned:=TRUE;
+	END_IF
+	
+END_CASE]]></ST>
+    </Implementation>
+    <Property Name="Burned" Id="{1d1409a6-25fd-400a-bee1-b98e880d4431}">
+      <Declaration><![CDATA[PROPERTY Burned : BOOL;]]></Declaration>
+      <Get Name="Get" Id="{0cd453c2-a84f-4940-8569-6ea5216b1c29}">
+        <Declaration><![CDATA[VAR
+
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bBurned:=Burned;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{7fa32c2c-01e8-4699-bd9b-b92865c765e7}">
+        <Declaration><![CDATA[VAR
+	
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Burned:=bBurned;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="MethodPizza" Id="{973a8685-4554-4338-ac21-4d340b906904}">
+      <Declaration><![CDATA[METHOD PUBLIC MethodPizza : UDINT
+VAR_INPUT
+burned 		:BOOL;
+	bBurned			: BOOL;
+END_VAR
+VAR
+
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF burned THEN
+	
+	bBurned:=TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PIZZA_OVEN">
+      <LineId Id="225" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="246" Count="35" />
+      <LineId Id="308" Count="0" />
+      <LineId Id="282" Count="3" />
+      <LineId Id="329" Count="1" />
+      <LineId Id="286" Count="1" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="PIZZA_OVEN.Burned.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PIZZA_OVEN.Burned.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PIZZA_OVEN.MethodPizza">
+      <LineId Id="5" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="16" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

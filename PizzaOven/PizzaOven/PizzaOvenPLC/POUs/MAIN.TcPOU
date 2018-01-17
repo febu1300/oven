@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.6">
+  <POU Name="MAIN" Id="{c947f11a-740d-412a-9e96-92917ed4e532}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_INPUT
+	
+	Pizza_in 	: 				BOOL; 	//sensorlicht am eingang bricht ab, Teig is aufgeladen
+	Pizza_out 	:				BOOL;  // Pizza entfernen
+END_VAR
+VAR
+		i 			: 			DINT;
+	//fbTrigEin		: 			R_TRIG;
+	//Objeckt deklaration von class FB_Pizza_Oven
+	veggie			: 			FB_PIZZA_OVEN; 
+	salami			:			FB_PIZZA_OVEN;
+//	p:							BrandAlarm;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+CASE i+1 OF 
+1:
+
+veggie.PizzaEin:=pizza_in;				// Teig auf Förderbahn1
+veggie.KochZeit:=T#3S;					// Kochzeit für Veggie pizza ist 3sekunden
+veggie.PizzaAus:=pizza_out;				//pizza am Fließband wird entfernt
+veggie.MethodPizza();
+
+2:
+
+salami.PizzaEin:=pizza_in;
+salami.KochZeit:=T#7S;
+salami.PizzaAus:=pizza_out;
+salami.MethodPizza();
+
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="360" Count="5" />
+      <LineId Id="367" Count="0" />
+      <LineId Id="369" Count="2" />
+      <LineId Id="379" Count="0" />
+      <LineId Id="372" Count="4" />
+      <LineId Id="222" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
